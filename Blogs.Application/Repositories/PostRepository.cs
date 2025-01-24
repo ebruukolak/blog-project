@@ -1,50 +1,170 @@
-﻿using Blogs.Application.Models;
+﻿using Blogs.Application.Database;
+using Blogs.Application.Models;
+using Dapper;
+using Microsoft.Identity.Client;
 
 namespace Blogs.Application.Repositories
 {
     public class PostRepository : IPostRepository
     {
-        private readonly List<Post> _posts = new();
-        public Task<bool> CreateAsync(Post post)
+        private readonly IDbConnectionFactory _dbConnectionFactory;
+        public PostRepository(IDbConnectionFactory dbConnectionFactory)
         {
-            _posts.Add(post);
-            return Task.FromResult(true);
+           _dbConnectionFactory = dbConnectionFactory;
         }
+        public async Task<bool> CreateAsync(Post post)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var transaction = connection.BeginTransaction();
 
-        public Task<Post?> GetByIdAsync(Guid id)
-        {
-            var post = _posts.SingleOrDefault(x => x.Id == id);
-            return Task.FromResult(post);
-        }
-        public Task<Post?> GetBySlugAsync(string slug)
-        {
-            var post = _posts.SingleOrDefault(x => x.Slug == slug);
-            return Task.FromResult(post);
-        }
-
-        public Task<IEnumerable<Post>> GetAllAsync()
-        {
-            return Task.FromResult(_posts.AsEnumerable());
-        }
-
-        public Task<bool> UpdateAsync(Post post)
-        {
-            var postIndex = _posts.FindIndex(x => x.Id == post.Id);
-            if (postIndex == -1)
+            var result = await connection.ExecuteAsync(new CommandDefinition("""
+                insert into Posts(id,categoryId,title,slug,content,isDraft,publishedDate)
+                values(@Id,@CategoryId,@Title,@Slug,@Content,@IsDraft,@PublishedDate)
+                """, post,transaction));
+            if (result > 0)
             {
-                return Task.FromResult(false);
+                foreach (var tag in post.Tags)
+                {
+                    await connection.ExecuteAsync(new CommandDefinition("""
+                        insert into Tags(postId,name)
+                        values(@postId,@name)
+                        """, new {postId=post.Id,name=tag},transaction));
+                }
             }
-            _posts[postIndex]=post;
-            return Task.FromResult(true);
+
+            transaction.Commit();
+            return result>0;
         }
 
-        public Task<bool> DeleteByIdAsync(Guid id)
+        public async Task<Post?> GetByIdAsync(Guid id)
         {
-            var removedCount = _posts.RemoveAll(x => x.Id == id);
-            var removedPost = removedCount > 0;
-            return Task.FromResult(removedPost);
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+
+            var post = await connection.QuerySingleOrDefaultAsync<Post>(new CommandDefinition("""
+                select * from Posts where id = @id
+                """, new { id}));
+
+            if (post is null)
+            {
+                return null;
+            }
+
+            var tags = await connection.QueryAsync<string>(new CommandDefinition("""
+                select name from Tags where postId= @postId
+                """,new { postId=id}));
+
+            foreach (var tag in tags)
+            {
+                post.Tags.Add(tag);
+            }
+
+            return post;
+        }
+        public async Task<Post?> GetBySlugAsync(string slug)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+
+            var post = await connection.QuerySingleOrDefaultAsync<Post>(new CommandDefinition("""
+                select * from Posts where slug = @slug
+                """, new { slug }));
+
+            if (post is null)
+            {
+                return null;
+            }
+
+            var tags = await connection.QueryAsync<string>(new CommandDefinition("""
+                select name from Tags where postId= @postId
+                """, new { postId = post.Id }));
+
+            foreach (var tag in tags)
+            {
+                post.Tags.Add(tag);
+            }
+
+            return post;
         }
 
-      
+        public async Task<IEnumerable<Post>> GetAllAsync()
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            var result = await connection.QueryAsync(new CommandDefinition("""
+                select p.*, t.tags
+                from Posts p
+                left join (
+                    select t.postId, string_agg(t.name, ',') as tags
+                    from Tags t
+                    group by t.postId
+                ) t on p.id = t.postId;
+                """));
+
+            return result.Select(s => new Post
+            {
+                Id = s.id,
+                CategoryId =  s.categoryId,
+                Title = s.title,
+                Content = s.content,
+                IsDraft = s.isDraft,
+                PublishedDate = s.publishedDate,
+                Tags = Enumerable.ToList(s.tags.Split(','))
+            });
+
+        }
+
+        public async Task<bool> UpdateAsync(Post post)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var transaction = connection.BeginTransaction();
+
+            await connection.ExecuteAsync(new CommandDefinition("""
+                delete from Tags where postId = @postId
+                """, new {postId=post.Id},transaction));
+
+            foreach (var tag in post.Tags)
+            {
+                await connection.ExecuteAsync(new CommandDefinition("""
+                        insert into Tags(postId,name)
+                        values(@postId,@name)
+                        """, new { postId = post.Id, name = tag }, transaction));
+            }
+
+            var result = await connection.ExecuteAsync(new CommandDefinition("""
+                                update Posts set categoryId = @CategoryId, 
+                                 title = @Title, slug = @Slug, 
+                				 content = @Content, 
+                				 isDraft = @IsDraft, 
+                				 publishedDate = @PublishedDate
+                	where id = @Id
+                """,post,transaction));
+
+            transaction.Commit();
+
+            return result > 0;
+
+        }
+
+        public async Task<bool> DeleteByIdAsync(Guid id)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var transaction = connection.BeginTransaction();
+
+            await connection.ExecuteAsync(new CommandDefinition("""
+                delete from Tags where postId = @postId
+                """, new { postId = id }, transaction));
+            var result = await connection.ExecuteAsync(new CommandDefinition("""
+                delete from Posts where id = @id
+                """, new {id},transaction));
+            transaction.Commit();
+            return result > 0;
+        }
+
+        public async Task<bool> ExistByIdAsync(Guid id)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            var result = await connection.ExecuteScalarAsync<bool>(new CommandDefinition("""
+                select count(1) from Posts where id = @id
+                """, new {id}));
+            return result;
+        }
     }
 }

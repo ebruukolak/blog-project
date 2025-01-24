@@ -50,12 +50,30 @@ namespace Blogs.Application.Database
                           CREATE TABLE Posts
                           (
                               id UNIQUEIDENTIFIER primary key,
+                              categoryId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Categories(id),
                               title nvarchar(100) not null,
                               slug nvarchar(150),
                               content nvarchar(max),
-                              categoryId UNIQUEIDENTIFIER not null,
                               isDraft bit not null,
                               publishedDate datetime
+
+                          );
+                    END
+                """);
+
+            await connection.ExecuteAsync("""
+                      IF NOT EXISTS 
+                      (
+                        SELECT * FROM INFORMATION_SCHEMA.TABLES
+                        WHERE TABLE_SCHEMA = 'dbo'
+                        AND TABLE_TYPE = 'BASE TABLE'
+                        AND TABLE_NAME = 'Tags'
+                      ) 
+                    BEGIN
+                          CREATE TABLE Tags
+                          (
+                              postId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Posts(id),
+                              name nvarchar(100) not null,
                           );
                     END
                 """);

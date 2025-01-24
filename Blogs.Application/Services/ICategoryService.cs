@@ -5,16 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Blogs.Application.Repositories
+namespace Blogs.Application.Services
 {
-    public interface ICategoryRepository
+    public interface ICategoryService
     {
         Task<bool> CreateAsync(Category category);
         Task<Category?> GetByIdAsync(Guid id);
         Task<Category?> GetBySlugAsync(string slug);
         Task<IEnumerable<Category>> GetAllAsync();
-        Task<bool> UpdateAsync(Category category);
+        Task<Category?> UpdateAsync(Category category);
         Task<bool> DeleteByIdAsync(Guid id);
-        Task<bool> ExistByIdAsync(Guid id);
     }
 }
