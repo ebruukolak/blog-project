@@ -19,16 +19,20 @@ namespace Blogs.API.Controllers
         {
             var post = request.MapToPost();
             await _postRepository.CreateAsync(post);
-            return CreatedAtAction(nameof(Get), new { id = post.Id }, post);
+            return CreatedAtAction(nameof(Get), new { idOrSlug = post.Id }, post);
         }
         [HttpGet(ApiEndpoints.Post.Get)]
-        public async Task<IActionResult> Get([FromRoute] Guid id)
+        public async Task<IActionResult> Get([FromRoute] string idOrSlug)
         {
-            var post = await _postRepository.GetByIdAsync(id);
+            var post = Guid.TryParse(idOrSlug,out var id) 
+                ? await _postRepository.GetByIdAsync(id)
+                : await _postRepository.GetBySlugAsync(idOrSlug);
+
             if (post == null)
             {
                 return NotFound();
             }
+
             var response = post.MaptoPostResponse();
             return Ok(response);
         }

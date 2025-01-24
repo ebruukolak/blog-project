@@ -11,6 +11,7 @@ namespace Blogs.Application.Repositories
     {
         Task<bool> CreateAsync(Category category);
         Task<Category?> GetByIdAsync(Guid id);
+        Task<Category?> GetBySlugAsync(string slug);
         Task<IEnumerable<Category>> GetAllAsync();
         Task<bool> UpdateAsync(Category category);
         Task<bool> DeleteByIdAsync(Guid id);

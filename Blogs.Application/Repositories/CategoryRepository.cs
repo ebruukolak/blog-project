@@ -20,7 +20,11 @@ namespace Blogs.Application.Repositories
             var category = _categories.SingleOrDefault(x => x.Id == id);
             return Task.FromResult(category);
         }
-
+        public Task<Category?> GetBySlugAsync(string slug)
+        {
+            var post = _categories.SingleOrDefault(x => x.Slug == slug);
+            return Task.FromResult(post);
+        }
         public Task<IEnumerable<Category>> GetAllAsync()
         {
             return Task.FromResult(_categories.AsEnumerable());

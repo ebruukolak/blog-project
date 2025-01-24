@@ -19,17 +19,20 @@ namespace Blogs.API.Controllers
         {
             var category = request.MapToCategory();
             await _categoryRepository.CreateAsync(category);
-            return CreatedAtAction(nameof(Get), new { id = category.Id }, category);
-            // return Created($"/{ApiEndpoints.Category.Create}/{category.Id}", category);
+            return CreatedAtAction(nameof(Get), new { idOrSlug = category.Id }, category);
         }
         [HttpGet(ApiEndpoints.Category.Get)]
-        public async Task<IActionResult> Get([FromRoute] Guid id)
+        public async Task<IActionResult> Get([FromRoute] string idOrSlug)
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
+             var category = Guid.TryParse(idOrSlug,out var id) 
+                ? await _categoryRepository.GetByIdAsync(id)
+                : await _categoryRepository.GetBySlugAsync(idOrSlug);
+
             if (category == null)
             {
                 return NotFound();
             }
+
             var response = category.MaptoCategoryResponse();
             return Ok(response);
         }

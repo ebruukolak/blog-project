@@ -40,6 +40,7 @@ namespace Blogs.API.Mapping
             {
                 Id = category.Id,
                 Name = category.Name,
+                Slug = category.Slug,
                 Description = category.Description,
                 ParentCategoryId = category.ParentCategoryId
             };

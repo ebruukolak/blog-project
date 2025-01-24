@@ -16,6 +16,11 @@ namespace Blogs.Application.Repositories
             var post = _posts.SingleOrDefault(x => x.Id == id);
             return Task.FromResult(post);
         }
+        public Task<Post?> GetBySlugAsync(string slug)
+        {
+            var post = _posts.SingleOrDefault(x => x.Slug == slug);
+            return Task.FromResult(post);
+        }
 
         public Task<IEnumerable<Post>> GetAllAsync()
         {
@@ -25,7 +30,7 @@ namespace Blogs.Application.Repositories
         public Task<bool> UpdateAsync(Post post)
         {
             var postIndex = _posts.FindIndex(x => x.Id == post.Id);
-            if (postIndex != -1)
+            if (postIndex == -1)
             {
                 return Task.FromResult(false);
             }
@@ -39,5 +44,7 @@ namespace Blogs.Application.Repositories
             var removedPost = removedCount > 0;
             return Task.FromResult(removedPost);
         }
+
+      
     }
 }

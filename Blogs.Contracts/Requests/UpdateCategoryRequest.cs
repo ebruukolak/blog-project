@@ -10,6 +10,6 @@ namespace Blogs.Contracts.Requests
     {
         public required string Name { get; init; }
         public string Description { get; set; }
-        public int? ParentCategoryId { get; set; }
+        public Guid? ParentCategoryId { get; set; }
     }
 }
