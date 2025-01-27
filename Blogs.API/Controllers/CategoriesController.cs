@@ -16,18 +16,18 @@ namespace Blogs.API.Controllers
         }
 
         [HttpPost(ApiEndpoints.Category.Create)]
-        public async Task<IActionResult> Create([FromBody] CreateCategoryRequest request)
+        public async Task<IActionResult> Create([FromBody] CreateCategoryRequest request,CancellationToken token)
         {
             var category = request.MapToCategory();
-            await _categoryService.CreateAsync(category);
+            await _categoryService.CreateAsync(category, token);
             return CreatedAtAction(nameof(Get), new { idOrSlug = category.Id }, category);
         }
         [HttpGet(ApiEndpoints.Category.Get)]
-        public async Task<IActionResult> Get([FromRoute] string idOrSlug)
+        public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
         {
              var category = Guid.TryParse(idOrSlug,out var id) 
-                ? await _categoryService.GetByIdAsync(id)
-                : await _categoryService.GetBySlugAsync(idOrSlug);
+                ? await _categoryService.GetByIdAsync(id, token)
+                : await _categoryService.GetBySlugAsync(idOrSlug, token);
 
             if (category == null)
             {
@@ -39,20 +39,20 @@ namespace Blogs.API.Controllers
         }
 
         [HttpGet(ApiEndpoints.Category.GetAll)]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll( CancellationToken token)
         {
-            var categories = await _categoryService.GetAllAsync();
+            var categories = await _categoryService.GetAllAsync(token);
 
             var response = categories.MaptoCategoriesResponse();
             return Ok(response);
         }
 
         [HttpPut(ApiEndpoints.Category.Update)]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCategoryRequest request)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCategoryRequest request, CancellationToken token)
         {
             var category = request.MapToCategory(id);
 
-            var updatedCategory = await _categoryService.UpdateAsync(category);
+            var updatedCategory = await _categoryService.UpdateAsync(category, token);
             if (updatedCategory is null)
             {
                 return NotFound();
@@ -62,9 +62,9 @@ namespace Blogs.API.Controllers
         }
 
         [HttpDelete(ApiEndpoints.Category.Delete)]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
         {
-            var deleted = await _categoryService.DeleteByIdAsync(id);
+            var deleted = await _categoryService.DeleteByIdAsync(id, token);
             if (!deleted)
             {
                 return NotFound();

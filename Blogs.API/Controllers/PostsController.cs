@@ -16,18 +16,18 @@ namespace Blogs.API.Controllers
         }
 
         [HttpPost(ApiEndpoints.Post.Create)]
-        public async Task<IActionResult> Create([FromBody] CreatePostRequest request)
+        public async Task<IActionResult> Create([FromBody] CreatePostRequest request, CancellationToken token)
         {
             var post = request.MapToPost();
-            await _postService.CreateAsync(post);
+            await _postService.CreateAsync(post, token);
             return CreatedAtAction(nameof(Get), new { idOrSlug = post.Id }, post);
         }
         [HttpGet(ApiEndpoints.Post.Get)]
-        public async Task<IActionResult> Get([FromRoute] string idOrSlug)
+        public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
         {
             var post = Guid.TryParse(idOrSlug,out var id) 
-                ? await _postService.GetByIdAsync(id)
-                : await _postService.GetBySlugAsync(idOrSlug);
+                ? await _postService.GetByIdAsync(id, token)
+                : await _postService.GetBySlugAsync(idOrSlug,token);
 
             if (post == null)
             {
@@ -39,20 +39,20 @@ namespace Blogs.API.Controllers
         }
 
         [HttpGet(ApiEndpoints.Post.GetAll)]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(CancellationToken token)
         {
-            var posts = await _postService.GetAllAsync();
+            var posts = await _postService.GetAllAsync(token);
 
             var response = posts.MaptoPostsResponse();
             return Ok(response);
         }
 
         [HttpPut(ApiEndpoints.Post.Update)]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdatePostRequest request)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdatePostRequest request, CancellationToken token)
         {
             var post = request.MapToPost(id);
 
-            var updatedPost = await _postService.UpdateAsync(post);
+            var updatedPost = await _postService.UpdateAsync(post, token);
             if (updatedPost is null)
             {
                 return NotFound();
@@ -62,9 +62,9 @@ namespace Blogs.API.Controllers
         }
 
         [HttpDelete(ApiEndpoints.Post.Delete)]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
         {
-            var deleted = await _postService.DeleteByIdAsync(id);
+            var deleted = await _postService.DeleteByIdAsync(id, token);
             if (!deleted)
             {
                 return NotFound();

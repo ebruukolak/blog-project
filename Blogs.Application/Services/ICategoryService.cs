@@ -9,11 +9,11 @@ namespace Blogs.Application.Services
 {
     public interface ICategoryService
     {
-        Task<bool> CreateAsync(Category category);
-        Task<Category?> GetByIdAsync(Guid id);
-        Task<Category?> GetBySlugAsync(string slug);
-        Task<IEnumerable<Category>> GetAllAsync();
-        Task<Category?> UpdateAsync(Category category);
-        Task<bool> DeleteByIdAsync(Guid id);
+        Task<bool> CreateAsync(Category category,CancellationToken token);
+        Task<Category?> GetByIdAsync(Guid id, CancellationToken token);
+        Task<Category?> GetBySlugAsync(string slug, CancellationToken token);
+        Task<IEnumerable<Category>> GetAllAsync(CancellationToken token);
+        Task<Category?> UpdateAsync(Category category, CancellationToken token);
+        Task<bool> DeleteByIdAsync(Guid id, CancellationToken token);
     }
 }

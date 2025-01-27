@@ -28,7 +28,7 @@ namespace Blogs.Application.Validators
         }
         private async Task<bool> ValidateSlug(Category category, CancellationToken cancellationToken)
         {
-            var existingCategory = await _categoryRepository.GetBySlugAsync(category.Slug);
+            var existingCategory = await _categoryRepository.GetBySlugAsync(category.Slug,cancellationToken);
 
             if (existingCategory is not null) 
             {

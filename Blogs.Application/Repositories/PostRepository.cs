@@ -12,15 +12,15 @@ namespace Blogs.Application.Repositories
         {
            _dbConnectionFactory = dbConnectionFactory;
         }
-        public async Task<bool> CreateAsync(Post post)
+        public async Task<bool> CreateAsync(Post post, CancellationToken token = default)
         {
-            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
             using var transaction = connection.BeginTransaction();
 
             var result = await connection.ExecuteAsync(new CommandDefinition("""
                 insert into Posts(id,categoryId,title,slug,content,isDraft,publishedDate)
                 values(@Id,@CategoryId,@Title,@Slug,@Content,@IsDraft,@PublishedDate)
-                """, post,transaction));
+                """, post,transaction,cancellationToken:token));
             if (result > 0)
             {
                 foreach (var tag in post.Tags)
@@ -28,7 +28,7 @@ namespace Blogs.Application.Repositories
                     await connection.ExecuteAsync(new CommandDefinition("""
                         insert into Tags(postId,name)
                         values(@postId,@name)
-                        """, new {postId=post.Id,name=tag},transaction));
+                        """, new {postId=post.Id,name=tag},transaction, cancellationToken: token));
                 }
             }
 
@@ -36,13 +36,13 @@ namespace Blogs.Application.Repositories
             return result>0;
         }
 
-        public async Task<Post?> GetByIdAsync(Guid id)
+        public async Task<Post?> GetByIdAsync(Guid id, CancellationToken token = default)
         {
-            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
 
             var post = await connection.QuerySingleOrDefaultAsync<Post>(new CommandDefinition("""
                 select * from Posts where id = @id
-                """, new { id}));
+                """, new { id}, cancellationToken: token));
 
             if (post is null)
             {
@@ -51,7 +51,7 @@ namespace Blogs.Application.Repositories
 
             var tags = await connection.QueryAsync<string>(new CommandDefinition("""
                 select name from Tags where postId= @postId
-                """,new { postId=id}));
+                """,new { postId=id}, cancellationToken: token));
 
             foreach (var tag in tags)
             {
@@ -60,13 +60,13 @@ namespace Blogs.Application.Repositories
 
             return post;
         }
-        public async Task<Post?> GetBySlugAsync(string slug)
+        public async Task<Post?> GetBySlugAsync(string slug, CancellationToken token = default)
         {
-            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
 
             var post = await connection.QuerySingleOrDefaultAsync<Post>(new CommandDefinition("""
                 select * from Posts where slug = @slug
-                """, new { slug }));
+                """, new { slug }, cancellationToken: token));
 
             if (post is null)
             {
@@ -75,7 +75,7 @@ namespace Blogs.Application.Repositories
 
             var tags = await connection.QueryAsync<string>(new CommandDefinition("""
                 select name from Tags where postId= @postId
-                """, new { postId = post.Id }));
+                """, new { postId = post.Id }, cancellationToken: token));
 
             foreach (var tag in tags)
             {
@@ -85,9 +85,9 @@ namespace Blogs.Application.Repositories
             return post;
         }
 
-        public async Task<IEnumerable<Post>> GetAllAsync()
+        public async Task<IEnumerable<Post>> GetAllAsync(CancellationToken token = default)
         {
-            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
             var result = await connection.QueryAsync(new CommandDefinition("""
                 select p.*, t.tags
                 from Posts p
@@ -96,7 +96,7 @@ namespace Blogs.Application.Repositories
                     from Tags t
                     group by t.postId
                 ) t on p.id = t.postId;
-                """));
+                """, cancellationToken: token));
 
             return result.Select(s => new Post
             {
@@ -111,21 +111,21 @@ namespace Blogs.Application.Repositories
 
         }
 
-        public async Task<bool> UpdateAsync(Post post)
+        public async Task<bool> UpdateAsync(Post post, CancellationToken token = default)
         {
-            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
             using var transaction = connection.BeginTransaction();
 
             await connection.ExecuteAsync(new CommandDefinition("""
                 delete from Tags where postId = @postId
-                """, new {postId=post.Id},transaction));
+                """, new {postId=post.Id},transaction, cancellationToken: token));
 
             foreach (var tag in post.Tags)
             {
                 await connection.ExecuteAsync(new CommandDefinition("""
                         insert into Tags(postId,name)
                         values(@postId,@name)
-                        """, new { postId = post.Id, name = tag }, transaction));
+                        """, new { postId = post.Id, name = tag }, transaction, cancellationToken: token));
             }
 
             var result = await connection.ExecuteAsync(new CommandDefinition("""
@@ -135,7 +135,7 @@ namespace Blogs.Application.Repositories
                 				 isDraft = @IsDraft, 
                 				 publishedDate = @PublishedDate
                 	where id = @Id
-                """,post,transaction));
+                """,post,transaction, cancellationToken: token));
 
             transaction.Commit();
 
@@ -143,27 +143,27 @@ namespace Blogs.Application.Repositories
 
         }
 
-        public async Task<bool> DeleteByIdAsync(Guid id)
+        public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
         {
-            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
             using var transaction = connection.BeginTransaction();
 
             await connection.ExecuteAsync(new CommandDefinition("""
                 delete from Tags where postId = @postId
-                """, new { postId = id }, transaction));
+                """, new { postId = id }, transaction, cancellationToken: token));
             var result = await connection.ExecuteAsync(new CommandDefinition("""
                 delete from Posts where id = @id
-                """, new {id},transaction));
+                """, new {id},transaction, cancellationToken: token));
             transaction.Commit();
             return result > 0;
         }
 
-        public async Task<bool> ExistByIdAsync(Guid id)
+        public async Task<bool> ExistByIdAsync(Guid id, CancellationToken token = default)
         {
-            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
             var result = await connection.ExecuteScalarAsync<bool>(new CommandDefinition("""
                 select count(1) from Posts where id = @id
-                """, new {id}));
+                """, new {id}, cancellationToken: token));
             return result;
         }
     }

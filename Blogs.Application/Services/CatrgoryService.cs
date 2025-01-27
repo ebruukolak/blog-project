@@ -13,43 +13,43 @@ namespace Blogs.Application.Services
             _categoryRepository = categoryRepository;
             _validator = validator;
         }
-        public async Task<bool> CreateAsync(Category category)
+        public async Task<bool> CreateAsync(Category category, CancellationToken token = default)
         {
-            await _validator.ValidateAndThrowAsync(category);
-            return await _categoryRepository.CreateAsync(category);
+            await _validator.ValidateAndThrowAsync(category,token);
+            return await _categoryRepository.CreateAsync(category,token);
         }
-        public Task<Category?> GetByIdAsync(Guid id)
+        public Task<Category?> GetByIdAsync(Guid id, CancellationToken token = default)
         {
-            return _categoryRepository.GetByIdAsync(id);
-        }
-
-        public Task<Category?> GetBySlugAsync(string slug)
-        {
-            return _categoryRepository.GetBySlugAsync(slug);
+            return _categoryRepository.GetByIdAsync(id, token);
         }
 
-
-        public Task<IEnumerable<Category>> GetAllAsync()
+        public Task<Category?> GetBySlugAsync(string slug, CancellationToken token = default)
         {
-            return _categoryRepository.GetAllAsync();
+            return _categoryRepository.GetBySlugAsync(slug, token);
         }
 
 
-        public async Task<Category?> UpdateAsync(Category category)
+        public Task<IEnumerable<Category>> GetAllAsync(CancellationToken token = default)
         {
-            await _validator.ValidateAndThrowAsync(category);
-            var categoryExist = await _categoryRepository.ExistByIdAsync(category.Id);
+            return _categoryRepository.GetAllAsync( token);
+        }
+
+
+        public async Task<Category?> UpdateAsync(Category category, CancellationToken token = default)
+        {
+            await _validator.ValidateAndThrowAsync(category, token);
+            var categoryExist = await _categoryRepository.ExistByIdAsync(category.Id, token);
             if (!categoryExist)
             {
                 return null;
             }
-            await _categoryRepository.UpdateAsync(category);
+            await _categoryRepository.UpdateAsync(category, token);
             return category;
         }
 
-        public Task<bool> DeleteByIdAsync(Guid id)
+        public Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
         {
-            return _categoryRepository.DeleteByIdAsync(id);
+            return _categoryRepository.DeleteByIdAsync(id, token);
         }
     }
 }

@@ -9,12 +9,12 @@ namespace Blogs.Application.Repositories
 {
     public interface IPostRepository
     {
-        Task<bool> CreateAsync(Post post);
-        Task<Post?> GetByIdAsync(Guid id);
-        Task<Post?> GetBySlugAsync(string slug);
-        Task<IEnumerable<Post>> GetAllAsync();
-        Task<bool> UpdateAsync(Post post);
-        Task<bool> DeleteByIdAsync(Guid id);
-        Task<bool> ExistByIdAsync(Guid id);
+        Task<bool> CreateAsync(Post post,CancellationToken token);
+        Task<Post?> GetByIdAsync(Guid id, CancellationToken token);
+        Task<Post?> GetBySlugAsync(string slug, CancellationToken token);
+        Task<IEnumerable<Post>> GetAllAsync(CancellationToken token);
+        Task<bool> UpdateAsync(Post post, CancellationToken token);
+        Task<bool> DeleteByIdAsync(Guid id, CancellationToken token);
+        Task<bool> ExistByIdAsync(Guid id, CancellationToken token);
     }
 }

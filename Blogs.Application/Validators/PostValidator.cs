@@ -27,8 +27,8 @@ namespace Blogs.Application.Validators
             RuleFor(x=>x.Tags)
                 .NotEmpty();
 
-            RuleFor(x=>x.IsDraft)
-                .NotNull();
+            //RuleFor(x=>x.IsDraft)
+            //    .NotNull();
 
             RuleFor(x => x)
                 .MustAsync(ValidateSlug);
@@ -36,7 +36,7 @@ namespace Blogs.Application.Validators
 
         private async Task<bool> ValidateSlug(Post post, CancellationToken token)
         {
-            var existingPost = await _postRepository.GetBySlugAsync(post.Slug);
+            var existingPost = await _postRepository.GetBySlugAsync(post.Slug,token);
 
             if(existingPost is not null)
             {
