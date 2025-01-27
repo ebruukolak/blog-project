@@ -1,5 +1,7 @@
 ﻿using Blogs.Application.Models;
 using Blogs.Application.Repositories;
+using Blogs.Application.Validators;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +13,17 @@ namespace Blogs.Application.Services
     public class PostService : IPostService
     {
         private readonly IPostRepository _postRepository;
+        private readonly PostValidator _postValidator;
 
-        public PostService(IPostRepository postRepository)
+        public PostService(IPostRepository postRepository, PostValidator postValidator)
         {
             _postRepository = postRepository;
+            _postValidator = postValidator;
         }
-        public Task<bool> CreateAsync(Post post)
+        public async Task<bool> CreateAsync(Post post)
         {
-            return _postRepository.CreateAsync(post);
+            await _postValidator.ValidateAndThrowAsync(post);
+            return await _postRepository.CreateAsync(post);
         }
 
         public Task<Post?> GetByIdAsync(Guid id)
@@ -37,6 +42,7 @@ namespace Blogs.Application.Services
         }
         public async Task<Post?> UpdateAsync(Post post)
         {
+            await _postValidator.ValidateAndThrowAsync(post);
             var postExist = await _postRepository.ExistByIdAsync(post.Id);
             if (!postExist)
             {

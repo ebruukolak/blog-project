@@ -1,5 +1,7 @@
+using Blogs.API.Mapping;
 using Blogs.Application;
 using Blogs.Application.Database;
+using FluentValidation.Results;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -15,7 +17,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 app.UseAuthorization();
-
+app.UseMiddleware<ValidationMappingMiddleware>();
 app.MapControllers();
 
 var dbInitializer = app.Services.GetRequiredService<DbInitializer>();

@@ -1,6 +1,7 @@
 ﻿using Blogs.Application.Database;
 using Blogs.Application.Repositories;
 using Blogs.Application.Services;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace Blogs.Application
             services.AddSingleton<IPostRepository, PostRepository>();
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<IPostService, PostService>();
-            
+            services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
 
             return services;
         }
