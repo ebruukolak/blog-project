@@ -16,11 +16,12 @@ namespace Blogs.Application.Repositories
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
             using var transaction = connection.BeginTransaction();
-
+          
             var result = await connection.ExecuteAsync(new CommandDefinition("""
-                insert into Posts(id,categoryId,title,slug,content,isDraft,publishedDate)
-                values(@Id,@CategoryId,@Title,@Slug,@Content,@IsDraft,@PublishedDate)
+                insert into Posts(id,categoryId,title,slug,content,isDraft,publishedDate,createdAt,updatedAt)
+                values(@Id,@CategoryId,@Title,@Slug,@Content,@IsDraft,@PublishedDate,@CreatedAt,@UpdatedAt)
                 """, post,transaction,cancellationToken:token));
+          
             if (result > 0)
             {
                 foreach (var tag in post.Tags)
@@ -133,7 +134,8 @@ namespace Blogs.Application.Repositories
                                  title = @Title, slug = @Slug, 
                 				 content = @Content, 
                 				 isDraft = @IsDraft, 
-                				 publishedDate = @PublishedDate
+                				 publishedDate = @PublishedDate,
+                                 updatedAt = @UpdatedAt
                 	where id = @Id
                 """,post,transaction, cancellationToken: token));
 

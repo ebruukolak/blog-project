@@ -25,8 +25,8 @@ namespace Blogs.Application.Repositories
             using var transaction = connection.BeginTransaction();
 
             var result = await connection.ExecuteAsync(new CommandDefinition("""
-                insert into Categories(id,name,slug,description,parentCategoryId)
-                values(@Id,@Name,@Slug,@Description,@ParentCategoryId)
+                insert into Categories(id,name,slug,description,parentCategoryId,createdAt)
+                values(@Id,@Name,@Slug,@Description,@ParentCategoryId,@CreatedAt)
                 """, category,transaction,cancellationToken:token));
 
             transaction.Commit();
@@ -71,8 +71,10 @@ namespace Blogs.Application.Repositories
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
             using var transaction = connection.BeginTransaction();
 
+
             var result = await connection.ExecuteAsync(new CommandDefinition("""
-                update Categories set name = @Name , slug = @Slug , description = @Description, parentCategoryId = @ParentCategoryId
+                update Categories set name = @Name , slug = @Slug , description = @Description, 
+                                      parentCategoryId = @ParentCategoryId, updatedAt = @UpdatedAt
                 where id=@Id
                 """,category,transaction, cancellationToken: token));
 
@@ -98,7 +100,7 @@ namespace Blogs.Application.Repositories
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
             var result = await connection.ExecuteScalarAsync<bool>(new CommandDefinition("""
-                select top(1) from Category where id = @id
+                select count(1) from Categories where id = @id
                 """, new {id}, cancellationToken: token));
 
             return result;

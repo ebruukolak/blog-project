@@ -14,6 +14,8 @@ namespace Blogs.Application.Models
         public string Slug => GenerateSlug();
         public string Description { get; set; }
         public Guid? ParentCategoryId { get; set; }
+        public DateTime CreatedAt { get; init; }
+        public DateTime? UpdatedAt { get; init; }
 
         private string GenerateSlug()
         {

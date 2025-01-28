@@ -15,7 +15,8 @@ namespace Blogs.API.Mapping
                 Id = Guid.NewGuid(),
                 Name = request.Name,
                 Description = request.Description,
-                ParentCategoryId = request.ParentCategoryId
+                ParentCategoryId = request.ParentCategoryId,
+                CreatedAt = DateTime.UtcNow
             };
 
             return category;
@@ -28,7 +29,8 @@ namespace Blogs.API.Mapping
                 Id = id,
                 Name = request.Name,
                 Description = request.Description,
-                ParentCategoryId = request.ParentCategoryId
+                ParentCategoryId = request.ParentCategoryId,
+                UpdatedAt= DateTime.UtcNow
             };
 
             return category;

@@ -17,7 +17,8 @@ namespace Blogs.API.Mapping
                 CategoryId = request.CategoryId,
                 Tags = request.Tags.ToList(),
                 IsDraft = request.IsDraft,
-                PublishedDate = request.PublishedDate
+                PublishedDate = request.PublishedDate,
+                CreatedAt = DateTime.UtcNow
             };
 
             return post;
@@ -34,7 +35,8 @@ namespace Blogs.API.Mapping
                 CategoryId = request.CategoryId,
                 Tags = request.Tags.ToList(),
                 IsDraft = request.IsDraft,
-                PublishedDate = request.PublishedDate
+                PublishedDate = request.PublishedDate,
+                UpdatedAt = DateTime.UtcNow
             };
 
             return post;

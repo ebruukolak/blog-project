@@ -33,7 +33,9 @@ namespace Blogs.Application.Database
                                         name nvarchar(100) not null,
                                         slug nvarchar(150),
                                         description nvarchar(max),
-                                        parentCategoryId UNIQUEIDENTIFIER
+                                        parentCategoryId UNIQUEIDENTIFIER,
+                                        createdAt datetime not null,
+                                        updatedAt datetime
                                     );
                             END
                 """);
@@ -55,7 +57,9 @@ namespace Blogs.Application.Database
                               slug nvarchar(150),
                               content nvarchar(max),
                               isDraft bit not null,
-                              publishedDate datetime
+                              publishedDate datetime,
+                              createdAt datetime not null,
+                              updatedAt datetime
 
                           );
                     END
@@ -75,6 +79,46 @@ namespace Blogs.Application.Database
                               postId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Posts(id),
                               name nvarchar(100) not null,
                           );
+                    END
+                """);
+
+            await connection.ExecuteAsync("""
+                   IF NOT EXISTS 
+                   (
+                        SELECT * FROM INFORMATION_SCHEMA.TABLES
+                        WHERE TABLE_SCHEMA = 'dbo'
+                        AND TABLE_TYPE = 'BASE TABLE'
+                        AND TABLE_NAME = 'Roles'
+                    ) 
+                	BEGIN
+                			CREATE TABLE  Roles
+                			(
+                				id UNIQUEIDENTIFIER primary key,
+                				name nvarchar(256) not null unique,
+                			);
+                	END
+
+                """);
+
+            await connection.ExecuteAsync("""
+                   IF NOT EXISTS 
+                   (
+                        SELECT * FROM INFORMATION_SCHEMA.TABLES
+                        WHERE TABLE_SCHEMA = 'dbo'
+                        AND TABLE_TYPE = 'BASE TABLE'
+                        AND TABLE_NAME = 'Users'
+                    ) 
+                  BEGIN
+                        CREATE TABLE  Users
+                        (
+                            id UNIQUEIDENTIFIER primary key,
+                			roleId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Roles(id),
+                            email nvarchar(256) not null unique,
+                			passwordHash nvarchar(256) not null,
+                			isDeleted bit not null,
+                            createdAt datetime not null,
+                            updatedAt datetime
+                        );
                     END
                 """);
         }

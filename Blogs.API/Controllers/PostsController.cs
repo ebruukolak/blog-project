@@ -20,7 +20,8 @@ namespace Blogs.API.Controllers
         {
             var post = request.MapToPost();
             await _postService.CreateAsync(post, token);
-            return CreatedAtAction(nameof(Get), new { idOrSlug = post.Id }, post);
+            var response = post.MaptoPostResponse();
+            return CreatedAtAction(nameof(Get), new { idOrSlug = post.Id }, response);
         }
         [HttpGet(ApiEndpoints.Post.Get)]
         public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)

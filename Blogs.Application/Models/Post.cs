@@ -12,18 +12,20 @@ namespace Blogs.Application.Models
         public required Guid Id { get; init; }
         public required string Title { get; set; }
         public string Slug => GenerateSlug();
-               
+
         public required string Content { get; set; }
         //public required int AuthorId { get; set; }
         public required Guid CategoryId { get; set; }
         public required List<string> Tags { get; init; } = new();
         public required bool IsDraft { get; set; }
         public DateTime PublishedDate { get; set; }
+        public DateTime CreatedAt { get; init; }
+        public DateTime? UpdatedAt { get; init; }
 
         private string GenerateSlug()
         {
             var sluggedTitle = SluggedRegex().Replace(Title, string.Empty)
-                .ToLower().Replace(" ","-");
+                .ToLower().Replace(" ", "-");
 
             if (!sluggedTitle.EndsWith("-"))
             {
@@ -31,8 +33,8 @@ namespace Blogs.Application.Models
             }
             return $"{sluggedTitle}{PublishedDate.Year}";
         }
-      
-        [GeneratedRegex("^[a-z0-9-]", RegexOptions.NonBacktracking,5)]
+
+        [GeneratedRegex("^[a-z0-9-]", RegexOptions.NonBacktracking, 5)]
         private static partial Regex SluggedRegex();
     }
 }
