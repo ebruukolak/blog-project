@@ -1,4 +1,5 @@
 ﻿using Blogs.Application.Exceptions;
+using Blogs.Application.Helpers;
 using Blogs.Application.Models;
 using System;
 using System.Collections.Generic;
@@ -17,9 +18,9 @@ namespace Blogs.Application.Services
         {
             _userService = userService;
         }
-        public async Task<string> RegisterAsync(User user, CancellationToken cancellationToke)
+        public async Task<string> RegisterAsync(User user, CancellationToken cancellationToken)
         {
-            var userExist = await _userService.ExistByEmailAsync(user.Email, cancellationToke);
+            var userExist = await _userService.ExistByEmailAsync(user.Email, cancellationToken);
 
             if (userExist)
             {
@@ -27,11 +28,15 @@ namespace Blogs.Application.Services
             }
 
 
+            var hashedPassword = PasswordHelper.HashPassword(user.Password);
+
+            user.Password = hashedPassword;
+            await _userService.CreateAsync(user,cancellationToken);
 
 
             return null;
         }
-        public Task<string> LoginAsync(User user, CancellationToken cancellationToke)
+        public Task<string> LoginAsync(User user, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
