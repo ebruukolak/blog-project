@@ -1,7 +1,7 @@
 ﻿using Blogs.Contracts.Responses;
 using FluentValidation;
 
-namespace Blogs.API.Mapping
+namespace Blogs.API.Middleware
 {
     public class ValidationMappingMiddleware
     {

@@ -114,6 +114,8 @@ namespace Blogs.Application.Database
                             id UNIQUEIDENTIFIER primary key,
                 			roleId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Roles(id),
                             email nvarchar(256) not null unique,
+                            firstName nvarchar(256) not null,
+                            lastName nvarchar(256) not null,
                 			passwordHash nvarchar(256) not null,
                 			isDeleted bit not null,
                             createdAt datetime not null,
