@@ -9,13 +9,13 @@ namespace Blogs.API.Mapping
         {
             var user = new User
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),                
                 FirstName = registerationRequest.FirstName,
                 LastName = registerationRequest.LastName,
                 Email = registerationRequest.Email,
                 Password = registerationRequest.Password,
                 IsDeleted = false,
-                RoleId = new Guid(), // TODO: will be handled
+                RoleId = new Guid("FD471ED1-A021-49C8-9436-BC27E427CD6F"),//Guid.NewGuid(), // TODO: will be handled
                 CreatedAt = DateTime.UtcNow
             };
 

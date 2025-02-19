@@ -8,17 +8,18 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Blogs.Application.Services
+namespace Blogs.Application.Services.Auth
 {
     public class AuthService : IAuthService
     {
         private readonly IUserService _userService;
-
-        public AuthService(IUserService userService)
+        private readonly JwtTokenService _jwtTokenService;
+        public AuthService(IUserService userService, JwtTokenService jwtTokenService)
         {
             _userService = userService;
+            _jwtTokenService = jwtTokenService;
         }
-        public async Task<string> RegisterAsync(User user, CancellationToken cancellationToken)
+        public async Task<bool> RegisterAsync(User user, CancellationToken cancellationToken)
         {
             var userExist = await _userService.ExistByEmailAsync(user.Email, cancellationToken);
 
@@ -27,14 +28,15 @@ namespace Blogs.Application.Services
                 throw new UserAlreadyExistsException(user.Email);
             }
 
+            
+            var isUserCreated = await _userService.CreateAsync(user, cancellationToken);
 
-            var hashedPassword = PasswordHelper.HashPassword(user.Password);
+            if (!isUserCreated)
+            {
+                throw new InvalidCredentialsException();
+            }
 
-            user.Password = hashedPassword;
-            await _userService.CreateAsync(user,cancellationToken);
-
-
-            return null;
+            return isUserCreated;
         }
         public Task<string> LoginAsync(User user, CancellationToken cancellationToken)
         {

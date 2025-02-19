@@ -19,17 +19,19 @@ namespace Blogs.Application.Repositories
         }
         public async Task<bool> CreateAsync(User user, CancellationToken cancellationToken)
         {
-            using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
-            using var transaction = connection.BeginTransaction();
+                using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
+                using var transaction = connection.BeginTransaction();
 
-            var result = await connection.ExecuteAsync(new CommandDefinition("""
-                    insert into users(id,roleId,firstName,LastName, email,passwordHash,isDeleted,createdAt)
-                    values(@Id,@RoleId,@FirstName,@LastName,@Email,@PasswordHash,@IsDeleted,@CreatedAt)
-                """,user,transaction,cancellationToken:cancellationToken));
+                var result = await connection.ExecuteAsync(new CommandDefinition("""
+                    insert into users(id,roleId,email,firstName,lastName,passwordHash,isDeleted,createdAt)
+                    values(@Id,@RoleId,@Email,@FirstName,@LastName,@PasswordHash,@IsDeleted,@CreatedAt)
+                """, user, transaction, cancellationToken: cancellationToken));
 
-            transaction.Commit();
+                transaction.Commit();
 
-            return result > 0;
+                return result > 0;
+            
+            
         }
         public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {

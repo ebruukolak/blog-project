@@ -1,5 +1,6 @@
 ﻿using Blogs.API.Mapping;
 using Blogs.Application.Services;
+using Blogs.Application.Services.Auth;
 using Blogs.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,19 +9,23 @@ namespace Blogs.API.Controllers
     [ApiController]
     public class AuthController:ControllerBase
     {
-        private readonly IUserService _userService;
-        public AuthController(IUserService userService)
+        private readonly IAuthService _authService;
+        public AuthController(IAuthService authService)
         {
-           _userService = userService;
+           _authService = authService;
         }
 
-        public async Task<IActionResult> Register([FromBody] RegistrationRequest registrationRequest)
+
+        [HttpPost(ApiEndpoints.Auth.Register)]  
+        public async Task<IActionResult> Register([FromBody] RegistrationRequest registrationRequest,CancellationToken cancellationToken)
         {
             var user = registrationRequest.MaptoUser();
 
+            var isRegistered = await _authService.RegisterAsync(user, cancellationToken);
+            if (!isRegistered)
+                return BadRequest();
             
-
-            return Ok();
+            return Created();
         }
     }
 }
