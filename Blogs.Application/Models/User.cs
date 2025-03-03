@@ -10,16 +10,14 @@ namespace Blogs.Application.Models
         public required string LastName { get; set; }
         public required string Email { get; set; }
         public required Guid RoleId { get; set; }
-        public string PasswordHash => PassowrdHash();
+        public string PasswordHash{ get; set; }
         //TODO: change logic Password logic
         public required string Password { get; set; }
         public required bool IsDeleted { get; set; }
+        public bool IsEmailConfirmed { get; set; }
         public required DateTime CreatedAt { get; init; }
         public DateTime UpdatedAt { get; set; }
 
-        private string PassowrdHash()
-        {
-            return PasswordHelper.HashPassword(Password);
-        }
+       
     }
 }

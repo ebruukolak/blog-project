@@ -27,9 +27,20 @@ namespace Blogs.API.Controllers
             if (generatedToken is null)
                 return BadRequest();
 
-            await _emailService.SendEmailAsync(user, generatedToken, ApiEndpoints.Auth.ConfirmEmail, cancellationToken);
+            await _emailService.SendEmailAsync(user, generatedToken, ApiEndpoints.Auth.EmailConfirmation, cancellationToken);
 
             return Ok("Registration successful. Please check your email to confirm.");
+        }
+
+        [HttpGet(ApiEndpoints.Auth.EmailConfirmation)]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] Guid userId, [FromQuery] string token,CancellationToken cancellationToken)
+        {
+            var isConfirmed = await _authService.EmailConfirmationAsync(userId, token, cancellationToken);
+
+            if(!isConfirmed)
+                return BadRequest("Verification token expired");
+
+            return Ok();
         }
     }
 }

@@ -17,11 +17,13 @@ namespace Blogs.Application
             services.AddSingleton<ICategoryRepository, CategoryRepository>();
             services.AddSingleton<IPostRepository, PostRepository>();
             services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<IEmailVerificationRepository, EmailVerificationRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IEmailVerificationService, EmailVerificationService>();
             services.AddScoped<JwtTokenService>();
             services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
 

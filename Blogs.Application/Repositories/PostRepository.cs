@@ -1,7 +1,6 @@
 ﻿using Blogs.Application.Database;
 using Blogs.Application.Models;
 using Dapper;
-using Microsoft.Identity.Client;
 
 namespace Blogs.Application.Repositories
 {

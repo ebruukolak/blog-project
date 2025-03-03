@@ -1,4 +1,5 @@
-﻿using Blogs.Application.Models;
+﻿using Blogs.Application.Helpers;
+using Blogs.Application.Models;
 using Blogs.Application.Repositories;
 
 namespace Blogs.Application.Services.Users
@@ -13,6 +14,7 @@ namespace Blogs.Application.Services.Users
         public Task<bool> CreateAsync(User user, CancellationToken cancellationToken)
         {
             //TODO: Return back for role operations
+            user.PasswordHash = PasswordHelper.HashPassword(user.Password);
             return _userRepository.CreateAsync(user, cancellationToken);
         }
 
@@ -34,7 +36,7 @@ namespace Blogs.Application.Services.Users
             {
                 return null;
             }
-
+            user.UpdatedAt = DateTime.UtcNow;
             await _userRepository.UpdateAsync(user, cancellationToken);
             return user;
         }

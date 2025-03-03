@@ -1,4 +1,6 @@
-﻿namespace Blogs.API
+﻿using Org.BouncyCastle.Bcpg.OpenPgp;
+
+namespace Blogs.API
 {
     public static class ApiEndpoints
     {
@@ -28,7 +30,8 @@
         {
             private const string Base = $"{ApiBase}/auth";
             public const string Register = $"{Base}/register";
-            public const string ConfirmEmail = $"{Base}/confirm-email";
+            public const string EmailConfirmation = $"{Base}/confirm-email";
+            public const string ConfirmEmail = $"{EmailConfirmation}/{{userId:guid}}&{{token}}";
         }
     }
 }

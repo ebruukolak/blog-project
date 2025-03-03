@@ -117,11 +117,31 @@ namespace Blogs.Application.Database
                             firstName nvarchar(256) not null,
                             lastName nvarchar(256) not null,
                 			passwordHash nvarchar(256) not null,
-                			isDeleted bit not null,
+                            isEmailConfirmed bit,
+                			isDeleted bit not null,                           
                             createdAt datetime not null,
                             updatedAt datetime
                         );
                     END
+                """);
+
+            await connection.ExecuteAsync("""
+                 IF NOT EXISTS 
+                 (
+                      SELECT * FROM INFORMATION_SCHEMA.TABLES
+                      WHERE TABLE_SCHEMA = 'dbo'
+                      AND TABLE_TYPE = 'BASE TABLE'
+                      AND TABLE_NAME = 'EmailVerificationTokens'
+                  ) 
+                BEGIN
+                      CREATE TABLE  EmailVerificationTokens
+                      (
+                          id UNIQUEIDENTIFIER primary key,
+                       	  userId UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Users(id),
+                          token nvarchar(max) not null,
+                          createdAt datetime not null
+                      );
+                  END
                 """);
         }
     }

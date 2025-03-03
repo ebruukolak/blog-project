@@ -15,7 +15,7 @@ namespace Blogs.API.Mapping
                 Email = registerationRequest.Email,
                 Password = registerationRequest.Password,
                 IsDeleted = false,
-                RoleId = new Guid("FD471ED1-A021-49C8-9436-BC27E427CD6F"),//Guid.NewGuid(), // TODO: will be handled
+                RoleId = new Guid("FD471ED1-A021-49C8-9436-BC27E427CD6F"), // TODO: will be handled
                 CreatedAt = DateTime.UtcNow
             };
 
