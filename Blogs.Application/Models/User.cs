@@ -1,11 +1,5 @@
 ﻿using Blogs.Application.Helpers;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Blogs.Application.Models
 {
@@ -21,7 +15,7 @@ namespace Blogs.Application.Models
         public required string Password { get; set; }
         public required bool IsDeleted { get; set; }
         public required DateTime CreatedAt { get; init; }
-        public DateTime Updatedat { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         private string PassowrdHash()
         {

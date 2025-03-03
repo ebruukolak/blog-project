@@ -1,12 +1,6 @@
 ﻿using Blogs.Application.Exceptions;
-using Blogs.Application.Helpers;
 using Blogs.Application.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
+using Blogs.Application.Services.Users;
 
 namespace Blogs.Application.Services.Auth
 {
@@ -14,12 +8,13 @@ namespace Blogs.Application.Services.Auth
     {
         private readonly IUserService _userService;
         private readonly JwtTokenService _jwtTokenService;
+
         public AuthService(IUserService userService, JwtTokenService jwtTokenService)
         {
             _userService = userService;
             _jwtTokenService = jwtTokenService;
         }
-        public async Task<bool> RegisterAsync(User user, CancellationToken cancellationToken)
+        public async Task<string> RegisterAsync(User user, CancellationToken cancellationToken)
         {
             var userExist = await _userService.ExistByEmailAsync(user.Email, cancellationToken);
 
@@ -27,7 +22,6 @@ namespace Blogs.Application.Services.Auth
             {
                 throw new UserAlreadyExistsException(user.Email);
             }
-
             
             var isUserCreated = await _userService.CreateAsync(user, cancellationToken);
 
@@ -36,12 +30,16 @@ namespace Blogs.Application.Services.Auth
                 throw new InvalidCredentialsException();
             }
 
-            return isUserCreated;
+            var token = _jwtTokenService.GenerateToken(user);
+
+            return token;
         }
         public Task<string> LoginAsync(User user, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
+
+    
 
 
     }

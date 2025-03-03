@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Blogs.Application.Services
+namespace Blogs.Application.Services.Posts
 {
     public class PostService : IPostService
     {
@@ -38,7 +38,7 @@ namespace Blogs.Application.Services
 
         public Task<IEnumerable<Post>> GetAllAsync(CancellationToken token = default)
         {
-            return _postRepository.GetAllAsync( token);
+            return _postRepository.GetAllAsync(token);
         }
         public async Task<Post?> UpdateAsync(Post post, CancellationToken token = default)
         {

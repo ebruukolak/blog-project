@@ -2,21 +2,21 @@
 using Blogs.Application.Repositories;
 using FluentValidation;
 
-namespace Blogs.Application.Services
+namespace Blogs.Application.Services.Categories
 {
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IValidator<Category> _validator;
-        public CategoryService(ICategoryRepository categoryRepository,IValidator<Category> validator)
+        public CategoryService(ICategoryRepository categoryRepository, IValidator<Category> validator)
         {
             _categoryRepository = categoryRepository;
             _validator = validator;
         }
         public async Task<bool> CreateAsync(Category category, CancellationToken token = default)
         {
-            await _validator.ValidateAndThrowAsync(category,token);
-            return await _categoryRepository.CreateAsync(category,token);
+            await _validator.ValidateAndThrowAsync(category, token);
+            return await _categoryRepository.CreateAsync(category, token);
         }
         public Task<Category?> GetByIdAsync(Guid id, CancellationToken token = default)
         {
@@ -31,7 +31,7 @@ namespace Blogs.Application.Services
 
         public Task<IEnumerable<Category>> GetAllAsync(CancellationToken token = default)
         {
-            return _categoryRepository.GetAllAsync( token);
+            return _categoryRepository.GetAllAsync(token);
         }
 
 

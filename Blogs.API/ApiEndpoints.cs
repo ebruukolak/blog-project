@@ -28,6 +28,7 @@
         {
             private const string Base = $"{ApiBase}/auth";
             public const string Register = $"{Base}/register";
+            public const string ConfirmEmail = $"{Base}/confirm-email";
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Blogs.API.Mapping;
-using Blogs.Application.Repositories;
-using Blogs.Application.Services;
+using Blogs.Application.Services.Categories;
 using Blogs.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 

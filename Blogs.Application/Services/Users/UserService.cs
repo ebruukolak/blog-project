@@ -1,19 +1,14 @@
 ﻿using Blogs.Application.Models;
 using Blogs.Application.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Blogs.Application.Services
+namespace Blogs.Application.Services.Users
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
         public UserService(IUserRepository userRepository)
         {
-            _userRepository = userRepository;       
+            _userRepository = userRepository;
         }
         public Task<bool> CreateAsync(User user, CancellationToken cancellationToken)
         {
@@ -23,12 +18,12 @@ namespace Blogs.Application.Services
 
         public Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken)
         {
-           return _userRepository.GetAllAsync(cancellationToken);
+            return _userRepository.GetAllAsync(cancellationToken);
         }
 
         public Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return _userRepository.GetByIdAsync(id,cancellationToken);
+            return _userRepository.GetByIdAsync(id, cancellationToken);
         }
 
         public async Task<User> UpdateAsync(User user, CancellationToken cancellationToken)

@@ -41,9 +41,9 @@ namespace Blogs.API.Middleware
                     statusCode = (int)HttpStatusCode.Unauthorized;
                     message = exception.Message;
                     break;
-                case AppException appEx:
-                    statusCode = appEx.StatusCode;
-                    message = appEx.Message;
+                case AppException appException:
+                    statusCode = (int)HttpStatusCode.BadRequest;
+                    message = exception.Message;
                     break;
                 default:
                     break;

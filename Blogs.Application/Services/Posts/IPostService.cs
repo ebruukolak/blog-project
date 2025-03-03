@@ -1,6 +1,6 @@
 ﻿using Blogs.Application.Models;
 
-namespace Blogs.Application.Services
+namespace Blogs.Application.Services.Posts
 {
     public interface IPostService
     {

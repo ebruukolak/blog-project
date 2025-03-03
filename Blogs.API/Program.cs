@@ -10,6 +10,8 @@ var config = builder.Configuration;
 
 builder.Services.AddControllers();
 builder.Services.Configure<JwtSettings>(config.GetSection("JwtSettings"));
+builder.Services.Configure<EmailSettings>(config.GetSection("EmailSettings"));
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddApplication();
 builder.Services.AddDatabase(config["Database:ConnectionString"]!);
 var app = builder.Build();
