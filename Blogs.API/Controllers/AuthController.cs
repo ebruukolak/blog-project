@@ -27,7 +27,7 @@ namespace Blogs.API.Controllers
             if (generatedToken is null)
                 return BadRequest();
 
-            await _emailService.SendEmailAsync(user, generatedToken, ApiEndpoints.Auth.Register, cancellationToken);
+            await _emailService.SendEmailAsync(user, generatedToken, ApiEndpoints.Auth.ConfirmEmail, cancellationToken);
 
             return Ok("Registration successful. Please check your email to confirm.");
         }
