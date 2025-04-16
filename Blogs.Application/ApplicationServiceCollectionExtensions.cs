@@ -4,6 +4,7 @@ using Blogs.Application.Services.Auth;
 using Blogs.Application.Services.Categories;
 using Blogs.Application.Services.Email;
 using Blogs.Application.Services.Posts;
+using Blogs.Application.Services.Roles;
 using Blogs.Application.Services.Users;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,12 +19,14 @@ namespace Blogs.Application
             services.AddSingleton<IPostRepository, PostRepository>();
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IEmailVerificationRepository, EmailVerificationRepository>();
+            services.AddSingleton<IRoleRepository, RoleRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IEmailVerificationService, EmailVerificationService>();
+            services.AddScoped<IRoleservice, RoleService>();
             services.AddScoped<JwtTokenService>();
             services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
 

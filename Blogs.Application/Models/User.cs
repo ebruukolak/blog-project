@@ -15,6 +15,7 @@ namespace Blogs.Application.Models
         public required string Password { get; set; }
         public required bool IsDeleted { get; set; }
         public bool IsEmailConfirmed { get; set; }
+        public Role role { get; set; }
         public required DateTime CreatedAt { get; init; }
         public DateTime UpdatedAt { get; set; }
 

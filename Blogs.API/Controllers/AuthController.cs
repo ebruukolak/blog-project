@@ -42,5 +42,12 @@ namespace Blogs.API.Controllers
 
             return Ok();
         }
-    }
+        [HttpPost(ApiEndpoints.Auth.Login)]
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest,CancellationToken cancellationToken)
+        {
+           var user = loginRequest.MaptoUser();
+            var token = await _authService.LoginAsync(user, cancellationToken);
+            return Ok(new { Token = token});
+        }
+    } 
 }

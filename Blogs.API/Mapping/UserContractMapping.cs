@@ -21,5 +21,22 @@ namespace Blogs.API.Mapping
 
             return user;
         }
+
+        public static User MaptoUser(this LoginRequest loginRequest)
+        {
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                FirstName =  string.Empty,
+                LastName = string.Empty,
+                Email = loginRequest.Email,
+                Password = loginRequest.Password,
+                IsDeleted = false,
+                RoleId = new Guid("FD471ED1-A021-49C8-9436-BC27E427CD6F"), // TODO: will be handled
+                CreatedAt = DateTime.UtcNow
+            };
+
+            return user;
+        }
     }
 }

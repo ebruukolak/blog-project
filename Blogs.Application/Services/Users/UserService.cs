@@ -28,6 +28,11 @@ namespace Blogs.Application.Services.Users
             return _userRepository.GetByIdAsync(id, cancellationToken);
         }
 
+        public Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
+        {
+            return _userRepository.GetByEmailAsync(email, cancellationToken);
+        }
+
         public async Task<User> UpdateAsync(User user, CancellationToken cancellationToken)
         {
             //TODO: Return back for role operations

@@ -48,7 +48,21 @@ namespace Blogs.Application.Repositories
 
             return user;
         }
+        public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
 
+            var user = await connection.QuerySingleOrDefaultAsync<User>(new CommandDefinition("""
+                Select * from Users where email = @email
+                """, new { email }, cancellationToken: cancellationToken));
+
+            if (user is null)
+            {
+                return null;
+            }
+
+            return user;
+        }
         public async Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken)
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);

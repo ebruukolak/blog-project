@@ -32,6 +32,16 @@ namespace Blogs.API
             public const string Register = $"{Base}/register";
             public const string EmailConfirmation = $"{Base}/confirm-email";
             public const string ConfirmEmail = $"{EmailConfirmation}/{{userId:guid}}&{{token}}";
+            public const string Login = $"{Base}/login";
+        }
+
+        public static class Role
+        {
+            private const string Base = $"{ApiBase}/roles";
+            public const string Create = Base;
+            public const string Get = $"{Base}/{{id:guid}}";
+            public const string GetAll = Base;
+            public const string Delete = $"{Base}/{{id:guid}}";
         }
     }
 }

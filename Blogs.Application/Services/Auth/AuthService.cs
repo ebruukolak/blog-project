@@ -1,4 +1,5 @@
 ﻿using Blogs.Application.Exceptions;
+using Blogs.Application.Helpers;
 using Blogs.Application.Models;
 using Blogs.Application.Services.Email;
 using Blogs.Application.Services.Users;
@@ -59,9 +60,23 @@ namespace Blogs.Application.Services.Auth
             await _emailVerificationService.DeleteByIdAsync(emailVerificationToken.Id, cancellation);
             return true;
         }
-        public Task<string> LoginAsync(User user, CancellationToken cancellationToken)
+        public async Task<string> LoginAsync(User user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var existingUser = await _userService.GetByEmailAsync(user.Email, cancellationToken);
+
+            if (existingUser is null || !PasswordHelper.VerifyPassword(user.Password,existingUser.PasswordHash))
+            {
+                throw new UnauthorizedAccessException("Invalid credentials");
+            }
+
+            if (!existingUser.IsEmailConfirmed)
+            {
+                throw new UnauthorizedAccessException("Email not confirmed.");
+            }
+
+            var token = _jwtTokenService.GenerateToken(existingUser);
+
+            return token;
         }
 
 
